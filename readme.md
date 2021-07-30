@@ -1,32 +1,22 @@
 Code for Great Learning Assessment
-HOW TO RUN:
+
+HOW TO RUN
+1. Clone the project and run main.py file
+2. Enter Player no and max points which range for 0 to MAXINT
+3. enter r/R and then enter to roll the dice
 
 
--> Clone the project and run main.py file
-
--> Enter Player no and max points which range for 0 to MAXINT
-
--> enter r/R and then enter to roll the dice
-
-
-Problem Statement:
+Problem Statement
 -> Make a Dice rolling game with following functionalities
 
-    1. Take inputs from user for no of players and max points
-
-    2. Simulate Dice roll
-
-    3. add dice roll value to points of player
-    
-    4. Skip the chance in case of double 1
-
-    5. Give extra chance in case of 6
-
-    6. Show ranks after every roll
-
-    7. Once player points go over reuired points he completes the games
-
-    8. Game is finished when every person get his points over the the required points
+1. Take inputs from user for no of players and max points
+2. Simulate Dice roll
+3. add dice roll value to points of player
+4. Skip the chance in case of double 1
+5. Give extra chance in case of 6
+6. Show ranks after every roll
+7. Once player points go over reuired points he completes the games
+8. Game is finished when every person get his points over the the required points
 
 Assumptions:
 1. only positive integers would be entered by the users for input for no' of players and max points, even then validation has been applies
