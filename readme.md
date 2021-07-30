@@ -1,4 +1,7 @@
 Code for Great Learning Assessment
+HOW TO RUN:
+-> Clone the project and run main.py file
+
 
 Problem Statement:
 -> Make a Dice rolling game with following functionalities
