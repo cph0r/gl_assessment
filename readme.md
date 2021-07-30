@@ -1,6 +1,8 @@
 Code for Great Learning Assessment
 HOW TO RUN:
 -> Clone the project and run main.py file
+-> Enter Player no and max points which range for 0 to MAXINT
+-> enter r/R and then enter to roll the dice
 
 
 Problem Statement:
