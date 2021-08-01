@@ -1,82 +1,131 @@
-from utils import displayRankings, skipTurn
-from constants import ANOTHER_CHANCE, GAME_COMPLETED, PENALIZED, PLAYER, WINS
+from utils import displayRankings, skipTurn, updateRanks
+from constants import ANOTHER_CHANCE, GAME_COMPLETED, OUTCOME, PENALIZED, PLAYER, WINS
 import unittest
 from player import Player
 
+def initiateGame(players):
+    """Initialise the Game Variables"""
+    # Generate Random Player Order
+    player_order = [3,1,2]
+    
+    firstPlayer = Player(player_order[0]) 
+    unranked = {firstPlayer}
+    player = firstPlayer
+
+    for i in player_order:
+        if player_order.index(i) == 0:
+            continue
+        elif player_order.index(i) == players -1:
+            unranked.add(player)
+            player.next= Player(i)
+            player = player.next
+            player.next = firstPlayer
+        else:
+            player.next = Player(i)
+            player = player.next
+        unranked.add(player)
+    return firstPlayer ,unranked
 
 
 class TestStringMethods(unittest.TestCase):
-    def createTestCircle(player_len):
-        rankMap = {}
-        for i in range(1,player_len+1):
-            rankMap[i] = 0
-
-        return  rankMap
-
-
     def main(self):
-        # Initialise Test values
-        maxPoints = 6
-        current_turn , rankMap = self.createTestCircle(3)
-        winners = 0
-        iteration = 0
-
+        players = 3
+        maxPoints = 7
+        # Initialise values
+        player, unranked = initiateGame(players)
+        winners = []   
+        diceRolls = [1,1,6,4,1,5,1,6,2,3,4]
+        i = 0 
+        # Start Game
         while True:
-            currentPlayer = current_turn.data
+            # Skip Turn is player has already won
+            if player.win == True:
+                player = player.next
 
-            if currentPlayer.win == True:
-                # Skip Turn is player has already won
-                current_turn = current_turn.next
+            # Skip Turn is 1 occurs 2 times
+            elif player.skip == True:
+                # SKIP TESTING
+                skipTurn(player)
+                player = player.next
 
-            elif currentPlayer.skip == True:
-                # Skip Turn is 1 occurs 2 times
-                skipTurn(current_turn, currentPlayer)
-                current_turn = current_turn.next
-
+            # Else Player Rolls the Dice
             else:
-                # Else Player Rolls the Dice
-                points = currentPlayer.no
-                currentPlayer.points = currentPlayer.points + points
+                points = diceRolls[i]
+                # Update last Turn value for the player
+                print(player.no)
+                player.points = player.points + points
+                print(OUTCOME, points)
 
-                # Display Ranking
-                displayRankings(rankMap, currentPlayer)
+                # Player Completes The Game
+                if player.points >= maxPoints:
+                    updateRanks(player, winners,unranked)
+                    player.lastTurn = points
+                    player = player.next
 
-                if currentPlayer.points >= maxPoints:
-                    print(PLAYER + str(currentPlayer.no) + WINS)
-                    currentPlayer.win = True
-
-                    # Check completion condition
-                    winners = winners + 1
-                    if winners == len(rankMap):
+                    # Check game completion condition
+                    if players == len(winners):
                         print(GAME_COMPLETED)
-                        break
-                    current_turn = current_turn.next
+                        displayRankings(winners,unranked)
 
-                elif points == 1 and currentPlayer.lastTurn == 1:
+                        # RANK TESTING
+                        self.rankTest(winners)
+                        break
+                    
+
+                elif points == 1 and player.lastTurn == 1:
                     # Skip Next Turn
-                    print(PLAYER + str(currentPlayer.no) + PENALIZED)
-                    current_turn = current_turn.next
+                    self.skipTurnTest(player,i)
+                    print(PLAYER + str(player.no) + PENALIZED)
+                    player.lastTurn = points
+                    player.skip = True
+                    player = player.next
 
                 elif points == 6:
                     # Give Extra Chance
-                    print(PLAYER + str(currentPlayer.no) + ANOTHER_CHANCE)
+                    self.extraChanceIndexCheck(player, i)
+                    player.lastTurn = points
+                    print(PLAYER + str(player.no) + ANOTHER_CHANCE)
 
                 else:
                     # Increment Turn
-                    current_turn = current_turn.next
+                    player.lastTurn = points
+                    player = player.next
 
-                # Update last Turn value for the player
-                iteration = iteration + 1
-                currentPlayer.lastTurn = points
+                # Display Ranking
+                displayRankings(winners,unranked)
 
+                # TESTS
+                self.extraChanceTest(player, i)
+                self.skipChanceTest(player,i)
+                i = i + 1
 
-        # RANK MAP TESTING
-        self.assertEqual(rankMap[1], 6)
-        self.assertEqual(rankMap[2], 6)
-        self.assertEqual(rankMap[3], 6)
+    def rankTest(self, winners):
+        self.assertEqual(winners[0].no, 2)
+        self.assertEqual(winners[1].no, 1)
+        self.assertEqual(winners[2].no, 3)
+
+    
+
+    def skipTurnTest(self, player, i):
+        self.assertEqual(i, 4)
+        self.assertEqual(player.no, 3)
+    
+    def extraChanceTest(self, player, i):
+        # EXTRA CHANCE TEST
+        if i == 2:
+            self.assertEqual(player.no, 2)
+
+    def skipChanceTest(self, player, i):
+        # SKIP CHANCE TEST
+        if i == 4:
+            self.assertEqual(player.skip, True)
+
+    def extraChanceIndexCheck(self, player, i):
+        
+        self.assertEqual(i, 2)
+        self.assertEqual(player.no, 2)   
 
 
 if __name__ == '__main__':
     unittest.main()
-
 

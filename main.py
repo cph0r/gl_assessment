@@ -27,6 +27,7 @@ def startGame():
             # Player Completes The Game
             if player.points >= maxPoints:
                 updateRanks(player, winners,unranked)
+                player.lastTurn = points
                 player = player.next
 
                 # Check game completion condition
@@ -39,20 +40,22 @@ def startGame():
             elif points == 1 and player.lastTurn == 1:
                 # Skip Next Turn
                 print(PLAYER + str(player.no) + PENALIZED)
+                player.lastTurn = points
+                player.skip = True
                 player = player.next
 
             elif points == 6:
                 # Give Extra Chance
+                player.lastTurn = points
                 print(PLAYER + str(player.no) + ANOTHER_CHANCE)
 
             else:
                 # Increment Turn
+                player.lastTurn = points
                 player = player.next
 
             # Display Ranking
             displayRankings(winners,unranked)
-            # Update last Turn value for the player
-            player.lastTurn = points
 
 
 # START GAME

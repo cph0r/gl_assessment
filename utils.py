@@ -62,7 +62,7 @@ def getPlayerOrder(players):
 
 def skipTurn(player):
     """Function to skip turn"""
-    player.skip == False
+    player.skip = False
     player.lastTurn = 0
     print(PLAYER+str(player.no)+SKIP_TURN)
     
