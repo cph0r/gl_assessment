@@ -6,3 +6,5 @@ class Player():
         self.lastTurn = 0
         self.skip = False
         self.win = False
+        self.rank = None
+        self.next = None

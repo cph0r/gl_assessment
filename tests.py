@@ -1,4 +1,3 @@
-from turns import Turns
 from utils import displayRankings, skipTurn
 from constants import ANOTHER_CHANCE, GAME_COMPLETED, PENALIZED, PLAYER, WINS
 import unittest
@@ -9,13 +8,10 @@ from player import Player
 class TestStringMethods(unittest.TestCase):
     def createTestCircle(player_len):
         rankMap = {}
-        turn = Turns()
         for i in range(1,player_len+1):
-            turn.addTurn(Player(i))
             rankMap[i] = 0
 
-        current_turn = turn.getFirstPlayer()
-        return current_turn, rankMap
+        return  rankMap
 
 
     def main(self):

@@ -1,7 +1,6 @@
 from player import Player
 import random
-from turns import Turns
-from constants import ENTER_POINTS, ENTE_PLAYER, OUTCOME, PLAYER, ROLL_AGAIN, ROLL_DICE, SKIP_TURN, TURNS, VALID_NUMBER
+from constants import ENTER_POINTS, ENTE_PLAYER, OUTCOME, PLAYER, ROLL_AGAIN, ROLL_DICE, SKIP_TURN, TURNS, VALID_NUMBER, WINS
 
 
 def takeInputs():
@@ -36,9 +35,9 @@ def diceRoll():
     return random.randint(min, max)
 
 
-def simulateDiceRoll(currentPlayer):
+def simulateDiceRoll(player):
     """Simulate a Dice Roll"""
-    print(PLAYER + str(currentPlayer.no) + ROLL_DICE)
+    print(PLAYER + str(player.no) + ROLL_DICE)
     while True:
         s = input()
         if s == 'r' or s == 'R':
@@ -47,8 +46,10 @@ def simulateDiceRoll(currentPlayer):
             print(ROLL_AGAIN)
             continue
     points = diceRoll()
+    player.points = player.points + points
     print(OUTCOME, points)
     return points
+
 
 
 def getPlayerOrder(players):
@@ -59,40 +60,58 @@ def getPlayerOrder(players):
     return player_order
 
 
-def skipTurn(currentPlayer):
+def skipTurn(player):
     """Function to skip turn"""
-    currentPlayer.skip == False
-    print(PLAYER+str(currentPlayer.no)+SKIP_TURN)
-    currentPlayer.lastTurn = 0
+    player.skip == False
+    player.lastTurn = 0
+    print(PLAYER+str(player.no)+SKIP_TURN)
+    
 
 
-def displayRankings(rank_map, currentPlayer):
+def displayRankings(winners,unranked):
     """Display Rankings"""
-    rank_map[currentPlayer.no] = currentPlayer.points
     rank = 1
+    
     print('RANK\tPLAYER\t\tPOINTS')
-    ranks = sorted(rank_map.items(), key=lambda x: x[1], reverse=True)
-    for i in ranks:
-        print(str(rank)+'\t'+PLAYER+str(i[0])+'\t'+str(i[1]))
+    # DISPLAY RANKED PLAYERS
+    for player in winners:
+        print(str(rank)+'\t'+PLAYER+str(player.no)+'\t'+str(player.points))
+        rank = rank + 1
+    
+    # DISPLAY UNRANKED PLAYERS
+    unranked = sorted(unranked, key=lambda x: x.points, reverse=True)
+    for i in unranked:
+        print('Unranked'+'\t'+PLAYER+str(i.no)+'\t'+str(i.points))
         rank = rank + 1
 
 
-def initiateGame():
+def initiateGame(players):
     """Initialise the Game Variables"""
-    # TAKE INPUTS
-    players, maxPoints = takeInputs()
-
-    # Initilaising the Turn Circle
-    turn = Turns()
-    # Initialising the rank Map
-    rankMap = {}
-
     # Generate Random Player Order
     player_order = getPlayerOrder(players)
-    for i in player_order:
-        turn.addTurn(Player(i))
-        rankMap[i] = 0
+    
+    firstPlayer = Player(player_order[0]) 
+    unranked = {firstPlayer}
+    player = firstPlayer
 
-    # Get player with first Turn
-    current_turn = turn.getFirstPlayer()
-    return maxPoints, rankMap, current_turn
+    for i in player_order:
+        if player_order.index(i) == 0:
+            continue
+        elif player_order.index(i) == players -1:
+            unranked.add(player)
+            player.next= Player(i)
+            player = player.next
+            player.next = firstPlayer
+        else:
+            player.next = Player(i)
+            player = player.next
+        unranked.add(player)
+    return firstPlayer ,unranked
+
+
+def updateRanks(player, winners,unranked):
+    winners.append(player)
+    player.win = True
+    player.rank = len(winners)
+    unranked.remove(player)
+    print(PLAYER + str(player.no) + WINS+ str(len(winners)))
