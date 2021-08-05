@@ -115,3 +115,16 @@ def updateRanks(player, winners,unranked):
     player.rank = len(winners)
     unranked.remove(player)
     print(PLAYER + str(player.no) + WINS+ str(len(winners)))
+
+
+def sumOfLastPoints(player,history):
+    """Get Player History"""
+    historyArray = player.history
+    historyLen = len(historyArray)
+    sum = 0
+    if historyLen < history:
+        return 0
+    else:
+        for i in range(historyLen - history, historyLen):
+            sum = sum + historyArray[i]
+        return sum

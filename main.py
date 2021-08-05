@@ -1,6 +1,6 @@
 import random
 from player import Player
-from utils import displayRankings, initiateGame, simulateDiceRoll, skipTurn, takeInputs, updateRanks
+from utils import displayRankings, initiateGame, simulateDiceRoll, skipTurn, sumOfLastPoints, takeInputs, updateRanks
 from constants import *
 
 
@@ -23,11 +23,13 @@ def startGame():
         # Else Player Rolls the Dice
         else:
             points = simulateDiceRoll(player)
-            
+            player.lastTurn = points
+            player.history.append(points)
+
+
             # Player Completes The Game
             if player.points >= maxPoints:
                 updateRanks(player, winners,unranked)
-                player.lastTurn = points
                 player = player.next
 
                 # Check game completion condition
@@ -35,23 +37,23 @@ def startGame():
                     print(GAME_COMPLETED)
                     displayRankings(winners,unranked)
                     break
-                
 
             elif points == 1 and player.lastTurn == 1:
                 # Skip Next Turn
                 print(PLAYER + str(player.no) + PENALIZED)
-                player.lastTurn = points
                 player.skip = True
                 player = player.next
 
             elif points == 6:
                 # Give Extra Chance
-                player.lastTurn = points
                 print(PLAYER + str(player.no) + ANOTHER_CHANCE)
+
+            elif sumOfLastPoints(player,HISTORY) == HISTORYSUM:
+                # Check Sum
+                print(PLAYER + str(player.no) + ANOTHER_CHANCE_SUM,str(HISTORYSUM))
 
             else:
                 # Increment Turn
-                player.lastTurn = points
                 player = player.next
 
             # Display Ranking
